@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pokédex</title>
+    <link rel="icon" type="image/png" href="/game.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <style>
+        body { background-color: #1a1a2e; }
+
+        .pokedex {
+            background-color: #dc0a2d;
+            border: 4px solid #8b0000;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+        }
+        .lente {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #9fe7ff, #1e88e5 60%, #0d47a1);
+            border: 5px solid #fff;
+            box-shadow: 0 0 0 3px #222;
+        }
+        .luz { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #222; display: inline-block; }
+        .titulo-pokedex {
+            color: #ffcb05;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 0 #3d7dca, 4px 4px 0 #1a1a2e;
+        }
+        .tela {
+            background-color: #dedede;
+            border: 3px solid #555;
+            border-radius: 10px 10px 10px 35px;
+        }
+        .img-pokemon { width: 60px; height: 60px; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+<div class="container my-5">
+    <div class="pokedex p-4">
+
+        <!-- Topo da Pokédex -->
+        <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom border-3 border-dark">
+            <div class="lente"></div>
+            <div class="align-self-start">
+                <span class="luz bg-danger"></span>
+                <span class="luz bg-warning"></span>
+                <span class="luz bg-success"></span>
+            </div>
+            <h1 class="titulo-pokedex ms-auto mb-0">POKÉDEX</h1>
+        </div>
+
+        <a href="/pokedex/novo" class="btn btn-warning fw-bold mb-3">
+            <i class="bi bi-plus-circle"></i> Cadastrar Novo Pokémon
+        </a>
+
+        <!-- Tela -->
+        <div class="tela p-3">
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Imagem</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Altura</th>
+                        <th>Peso</th>
+                        <th>Data de Captura</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pokemon : ${pokedex}">
+                        <td class="fw-bold text-warning" th:text="'#' + ${pokemon.codigo}"></td>
+                        <td><img th:src="${pokemon.urlImagem}" alt="Imagem do Pokémon" class="img-pokemon"/></td>
+                        <td class="fw-bold" th:text="${pokemon.nome}"></td>
+                        <td><span class="badge rounded-pill bg-info text-dark" th:text="${pokemon.tipo}"></span></td>
+                        <td th:text="${pokemon.altura != null} ? ${#numbers.formatDecimal(pokemon.altura, 1, 'POINT', 2, 'COMMA')} + ' m' : '-'"></td>
+                        <td th:text="${pokemon.peso != null} ? ${#numbers.formatDecimal(pokemon.peso, 1, 'POINT', 2, 'COMMA')} + ' kg' : '-'"></td>
+                        <td th:text="${pokemon.dataDeCaptura != null} ? ${#temporals.format(pokemon.dataDeCaptura, 'dd/MM/yyyy')} : '-'"></td>
+                        <td>
+                            <!-- Link para editar o pokemon -->
+                            <a th:href="@{/pokedex/editar/{codigo}(codigo=${pokemon.codigo})}"
+                               class="btn btn-warning btn-sm me-1">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <!-- Link para excluir o pokemon -->
+                            <a th:href="@{/pokedex/excluir/{codigo}(codigo=${pokemon.codigo})}"
+                               class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja libertar este Pokémon?');">
+                                <i class="bi bi-trash"></i> Excluir
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

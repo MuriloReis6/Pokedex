@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pokédex - Cadastro</title>
+    <link rel="icon" type="image/png" href="/game.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <style>
+        body { background-color: #1a1a2e; }
+
+        .pokedex {
+            background-color: #dc0a2d;
+            border: 4px solid #8b0000;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+        }
+        .lente {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #9fe7ff, #1e88e5 60%, #0d47a1);
+            border: 5px solid #fff;
+            box-shadow: 0 0 0 3px #222;
+        }
+        .luz { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #222; display: inline-block; }
+        .titulo-pokedex {
+            color: #ffcb05;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #3d7dca, 4px 4px 0 #1a1a2e;
+        }
+        .tela {
+            background-color: #dedede;
+            border: 3px solid #555;
+            border-radius: 10px 10px 10px 35px;
+        }
+        .visor {
+            background-color: #232946;
+            border: 3px solid #111;
+            border-radius: 8px;
+            height: 220px;
+        }
+        .visor img { max-height: 190px; max-width: 90%; object-fit: contain; }
+        .painel { background-color: #232946; border: 3px solid #111; border-radius: 10px; }
+        .painel label { color: #4cd964; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="container my-5" style="max-width: 900px;">
+    <div class="pokedex p-4">
+
+        <!-- Topo da Pokédex -->
+        <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom border-3 border-dark">
+            <div class="lente"></div>
+            <div class="align-self-start">
+                <span class="luz bg-danger"></span>
+                <span class="luz bg-warning"></span>
+                <span class="luz bg-success"></span>
+            </div>
+            <h2 class="titulo-pokedex ms-auto mb-0"
+                th:text="${pokedex != null} ? 'ATUALIZAR POKÉMON' : 'NOVO POKÉMON'">NOVO POKÉMON</h2>
+        </div>
+
+        <!-- Se vier "acao" do controller (edição) usa ela; senão faz POST em /pokedex (cadastro) -->
+        <form th:action="${acao != null} ? ${acao} : @{/pokedex}" method="post">
+
+            <div class="row g-3">
+
+                <!-- Visor com a imagem -->
+                <div class="col-md-5">
+                    <div class="tela p-3 h-100">
+                        <div class="visor d-flex align-items-center justify-content-center">
+                            <img id="preview" th:src="${pokedex?.urlImagem}" alt="">
+                        </div>
+                        <p class="fw-bold text-dark mt-2 mb-0"
+                           th:text="${pokedex != null} ? 'Nº #' + ${pokedex.codigo} : 'Nº #???'">Nº #???</p>
+                    </div>
+                </div>
+
+                <!-- Campos -->
+                <div class="col-md-7">
+                    <div class="painel p-3">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome"
+                                   th:value="${pokedex?.nome}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label">Tipo</label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="">Selecione...</option>
+                                <option th:each="t : ${ {'Normal','Fogo','Água','Planta','Elétrico','Gelo','Lutador','Veneno','Terra','Voador','Psíquico','Inseto','Pedra','Fantasma','Dragão','Sombrio','Aço','Fada'} }"
+                                        th:value="${t}" th:text="${t}"
+                                        th:selected="${pokedex != null and pokedex.tipo == t}"></option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="altura" class="form-label">Altura (m)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="altura" name="altura"
+                                       th:value="${pokedex?.altura}" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="peso" class="form-label">Peso (kg)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="peso" name="peso"
+                                       th:value="${pokedex?.peso}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="dataDeCaptura" class="form-label">Data de Captura</label>
+                            <input type="date" class="form-control" id="dataDeCaptura" name="dataDeCaptura"
+                                   th:value="${pokedex?.dataDeCaptura}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="urlImagem" class="form-label">URL da Imagem</label>
+                            <input type="text" class="form-control" id="urlImagem" name="urlImagem"
+                                   th:value="${pokedex?.urlImagem}">
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Salvar
+                        </button>
+                        <a href="/pokedex" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // Atualiza a imagem do visor enquanto digita a URL
+    document.getElementById('urlImagem').addEventListener('input', function () {
+        document.getElementById('preview').src = this.value;
+    });
+</script>
+</body>
+</html>
